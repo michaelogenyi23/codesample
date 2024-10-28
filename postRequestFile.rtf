@@ -1,0 +1,69 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2709
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 const AWS = require('aws-sdk');\
+const s3 = new AWS.S3();\
+const Buffer = require('buffer').Buffer;\
+\
+const createSlug = (companyName) => \{\
+    // Replace spaces with underscores, convert to lower case, and remove non-alphanumeric characters (excluding underscores)\
+    let slug = companyName.replace(/ /g, '_').toLowerCase().replace(/[^a-z0-9_]/g, '');\
+    return slug;\
+\}\
+\
+exports.handler = async (event, context) => \{\
+    console.log('event', event);\
+    let inputs = JSON.parse(event.body);\
+\
+    let json = inputs.json;\
+    let images = inputs.images;\
+\
+    // get company slug, user, and timestamp\
+    let companySlug = createSlug(json.companyName);\
+    let user = createSlug(json.username);\
+    // get current timestamp\
+    let timestamp = new Date().getTime();\
+\
+    let jsonDirectory = `reviewData/$\{companySlug\}/$\{user\}/$\{timestamp\}`;\
+    let imageDirectory = `reviewPhotos/$\{companySlug\}/$\{user\}/$\{timestamp\}`;\
+\
+    // upload json\
+    let params = \{\
+        Body: JSON.stringify(json),\
+        Bucket: 'lambda-tester-bucket-06-21-23',\
+        Key: `$\{jsonDirectory\}/data.json`,\
+    \};\
+    try \{\
+        let response = await s3.putObject(params).promise();\
+        console.log('response', response);\
+    \} catch (error) \{\
+        console.log('error', error);\
+    \}\
+\
+    for (let i = 0; i < images.length; i++) \{\
+        let image = Buffer.from(images[i], 'base64');\
+        let params = \{\
+            Body: image,\
+            Bucket: 'lambda-tester-bucket-06-21-23',\
+            Key: `$\{imageDirectory\}/image$\{i + 1\}.png`,\
+        \};\
+        try \{\
+            let response = await s3.putObject(params).promise();\
+            console.log('response', response);\
+        \} catch (error) \{\
+            console.log('error', error);\
+        \}\
+\
+    \}\
+    return \{\
+        "headers": \{\
+            'Access-Control-Allow-Origin': '*'\
+        \},\
+        "statusCode": 200,\
+        "body": 'Hello from Lambda 2!'\
+    \};\
+\};}

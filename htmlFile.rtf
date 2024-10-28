@@ -1,0 +1,138 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2709
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 <!DOCTYPE html>\
+<html>\
+\
+<head>\
+    <title>Dynamic Table</title>\
+    <link rel="stylesheet" href="style.css">\
+    <link rel="stylesheet" href="form_style.css"\
+</head>\
+\
+<body>\
+    <div class="container-form">\
+        <h1 id = "title">The Form</h1>\
+\
+        <form id="myForm" method="POST" name="sample" class="myForm">\
+            <!-- your form fields... -->\
+            Your Name (username): <input type="text" name="username" autocomplete="username"> <br><br>\
+            Company Name: <input type="text" name="companyName" autocomplete="companyName"> <br><br>\
+            Store Address: <input type="text" name="storeaddy" autocomplete="storeaddy"> <br><br>\
+            Date: <input type="date" name="date" autocomplete="date"><br><br>\
+            Location: <input type="text" name="location" autocomplete="location"><br><br>\
+            Conditions: <input type="text" name="conditions" autocomplete="conditions"><br><br>\
+            Price Per Unit: <input type="text" name="ppu" autocomplete="ppu"><br><br>\
+            Shelf Space: <input type="text" name="shelfspace" autocomplete="shelfspace"><br><br>\
+            On Shelf: <input type="text" name="onshelf" autocomplete="onshelf"><br><br>\
+            Notes: <input type="text" name="notes" autocomplete="notes"><br><br>\
+            Tags\
+            <select name="tags" autocomplete="tags">\
+                <option></option>\
+                <option value="Yes">Yes</option>\
+                <option value="No">No</option>\
+            </select><br><br>\
+            Quality Control Issues\
+            <select name="qualitycontrol" autocomplete="qualitycontrol">\
+                <option></option>\
+                <option value="Yes">Yes</option>\
+                <option value="No">No</option>\
+            </select><br><br>\
+            Discussed with Store Employee\
+            <select name="storeemployee" autocomplete="storeemployee">\
+                <option></option>\
+                <option value="Yes">Yes</option>\
+                <option value="No">No</option>\
+            </select><br><br>\
+            Photo 1: <input type="file" name="photo1" accept="image/jpeg, image/png"><br>\
+            Photo 2: <input type="file" name="photo2" accept="image/jpeg, image/png">\
+            <br><br><button id="submitBtn">Submit</button>\
+        </form>\
+\
+        \
+        <p style="margin-top: 20px;">&copy; 2023 RETAIL WELLSPRING</p>\
+        <center><img src="rws_logo.png" class="small_logo"></center>\
+    </div>\
+    <script>\
+        window.onload = function () \{\
+            document.getElementById('myForm').addEventListener('submit', function(event) \{\
+                event.preventDefault();\
+                // Get form values\
+                var form = document.forms.sample;\
+                var username = form.username.value;\
+                var storeaddy = form.storeaddy.value;\
+                var companyName = form.companyName.value;\
+                var date = form.date.value;\
+                var location = form.location.value;\
+                var conditions = form.conditions.value;\
+                var ppu = form.ppu.value;\
+                var shelfspace = form.shelfspace.value;\
+                var onshelf = form.onshelf.value;\
+                var tags = form.tags.value;\
+                var notes = form.notes.value;\
+                var qualitycontrol = form.qualitycontrol.value;\
+                var storeemployee = form.storeemployee.value;\
+                var photo1 = form.photo1.files[0];\
+                var photo2 = form.photo2.files[0];\
+\
+                // Prepare your data\
+                var jsonData = \{\
+                    username: username,\
+                    companyName: companyName,\
+                    storeAddress: storeaddy,\
+                    date: date,\
+                    location: location,\
+                    conditions: conditions,\
+                    ppu: ppu,\
+                    shelfSpace: shelfspace,\
+                    onshelf: onshelf,\
+                    tags: tags,\
+                    notes: notes,\
+                    qualitycontrol: qualitycontrol,\
+                    storeemployee: storeemployee\
+                \};\
+\
+                var reader1 = new FileReader();\
+                reader1.onloadend = function () \{\
+                    var base64Image1 = reader1.result.split(',')[1];  // get the base64 encoded image\
+\
+                    var imageData1 = base64Image1;\
+\
+                    var reader2 = new FileReader();\
+                    reader2.onloadend = function () \{\
+                        var base64Image2 = reader2.result.split(',')[1];  // get the base64 encoded image\
+\
+                        var imageData2 = base64Image2;\
+\
+                        // Combine JSON data and image data into a list\
+                        var data = \{\
+                            json: jsonData,\
+                            images: [imageData1, imageData2]\
+                        \}\
+\
+                        // Send the request\
+                        fetch('https://1mnrwnutd1.execute-api.us-east-1.amazonaws.com/apiStageMain/rwsDemo1', \{\
+                            method: 'POST',\
+                            mode: 'no-cors',\
+                            body: JSON.stringify(data)\
+                        \}) .then(() => \{\
+                            alert("Your form was submitted successfully!");\
+                            form.reset();\
+                            window.location.href = "thank_you_page.html";\
+                        \}).catch(() => \{\
+                            alert("There was an error submitting your form.");\
+                        \});\
+                    \}\
+                    reader2.readAsDataURL(photo2);  // read the second file as Data URL\
+                \}\
+                reader1.readAsDataURL(photo1);  // read the first file as Data URL\
+            \});\
+        \};\
+    </script>\
+</body>\
+\
+</html>}
